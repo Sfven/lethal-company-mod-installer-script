@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo Lethal Company mod installer/updater script, by.
+echo Lethal Company mod installer/updater script, by Sfven.
 echo ------------------------------------------------------
 
 set "defaultDir=C:\Program Files (x86)\Steam\steamapps\common\Lethal Company"

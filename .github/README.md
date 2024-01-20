@@ -13,7 +13,7 @@ A script for installing various mods for Lethal Company. It purges old mods and 
   * Allows you to play YouTube videos as audio through the boombox; use `/bhelp` to see commands
 * LateCompany
   * Allows players to join after a game has already started
-* FreeBirdMod
+* FreeJester
   * Replaces Jester sound effects with Freebird
 * LethalClunk
   * Replaces the Large Axle's drop sound with the metal pipe hitting the ground sound effect

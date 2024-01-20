@@ -5,7 +5,7 @@ echo Lethal Company mod installer/updater script, by Sfven.
 echo ------------------------------------------------------
 
 set "defaultDir=C:\Program Files (x86)\Steam\steamapps\common\Lethal Company"
-set "downloadFolder=%USERPROFILE%\Downloads\"
+set "downloadFolder=%USERPROFILE%\Downloads"
 
 set "urls[0]=https://gcdn.thunderstore.io/live/repository/packages/notnotnotswipez-MoreCompany-1.7.5.zip"
 set "urls[1]=https://gcdn.thunderstore.io/live/repository/packages/2018-LC_API-3.4.5.zip"
@@ -30,7 +30,7 @@ set "extractPath=%defaultDir%"
 set /p "extractPath=Enter path of your Lethal Company installation (Leave blank for default: '%extractPath%'): "
 set extractPath=%extractPath:"=%
 set "fileName=tmp.zip"
-set "downloadPath=!downloadFolder!!fileName!"
+set "downloadPath=!downloadFolder!\!fileName!"
 
 if not exist "%extractPath%" (
     echo Critial error: Path "%extractPath%" not found.
@@ -47,11 +47,11 @@ if exist "%extractPath%\BepInEx\plugins" (
 if not exist "%extractPath%\winhttp.dll" (
     echo Warning: winhttp.dll not detected. BepInExPack modloader must not be installed. It will now be installed.
     echo Downloading !bepinEx!...
-    curl --ssl-no-revoke -so "%temp%\tmp.zip" "!bepinEx!"
-    tar -xf "%temp%\tmp.zip" -C "%temp%"
-    xcopy /E /Y /Q "%temp%\BepInExPack\*" "!extractPath!"
-    del /S /Q "%temp%\tmp.zip"
-    rmdir /S /Q "%temp%\BepInExPack"
+    curl --ssl-no-revoke -so "%downloadPath%" "!bepinEx!"
+    tar -xf "%downloadPath%" -C "%downloadFolder%"
+    xcopy /E /Y /Q "%downloadFolder%\BepInExPack\*" "!extractPath!"
+    del /S /Q "%downloadPath%"
+    rmdir /S /Q "%downloadFolder%\BepInExPack"
     echo Complete.
 )
 

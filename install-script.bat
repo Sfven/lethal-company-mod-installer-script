@@ -24,7 +24,7 @@ set "bepinEx=https://gcdn.thunderstore.io/live/repository/packages/BepInEx-BepIn
 
 echo Tip: To copy a folder's location, shift+right click the folder and press 'Copy as path.'
 echo Other tip: To paste that in here, use ctrl+shift+v.
-echo
+echo ""
 
 set /p "extractPath=Enter path of your Lethal Company installation (Leave blank for default: '%defaultDir%'): "
 set extractPath=%extractPath:"=%

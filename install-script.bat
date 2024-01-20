@@ -26,12 +26,11 @@ echo Tip: To copy a folder's location, shift+right click the folder and press 'C
 echo Other tip: To paste that in here, use ctrl+shift+v.
 echo.
 
-set /p "extractPath=Enter path of your Lethal Company installation (Leave blank for default: '%defaultDir%'): "
+set "extractPath=%defaultDir%"
+set /p "extractPath=Enter path of your Lethal Company installation (Leave blank for default: '%extractPath%'): "
 set extractPath=%extractPath:"=%
 set "fileName=tmp.zip"
 set "downloadPath=!downloadFolder!!fileName!"
-
-if not defined !extractPath! set "extractPath=%defaultDir%"
 
 if not exist "%extractPath%" (
     echo Critial error: Path "%extractPath%" not found.

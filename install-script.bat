@@ -14,7 +14,7 @@ set "urls[3]=https://gcdn.thunderstore.io/live/repository/packages/Ozone-Runtime
 set "urls[4]=https://gcdn.thunderstore.io/live/repository/packages/sunnobunno-YippeeMod-1.2.3.zip"
 set "urls[5]=https://gcdn.thunderstore.io/live/repository/packages/KoderTeh-Boombox_Controller-1.1.9.zip"
 set "urls[6]=https://gcdn.thunderstore.io/live/repository/packages/anormaltwig-LateCompany-1.0.10.zip"
-set "urls[7]=https://gcdn.thunderstore.io/live/repository/packages/brigade-FreeBirdMod-1.0.0.zip"
+set "urls[7]=https://gcdn.thunderstore.io/live/repository/packages/atg-FreeJester-1.0.3.zip"
 set "urls[8]=https://gcdn.thunderstore.io/live/repository/packages/no00ob-LCSoundTool-1.5.0.zip"
 set "urls[9]=https://gcdn.thunderstore.io/live/repository/packages/Clementinise-CustomSounds-2.3.1.zip"
 set "urls[10]=https://gcdn.thunderstore.io/live/repository/packages/PanHouse-LethalClunk-1.1.1.zip"
@@ -76,6 +76,7 @@ for /L %%i in (0,1,%size%) do (
 echo Performing moves on mods that are not packaged correctly...
 move "!extractPath!\YippeeMod.dll" "!extractPath!\BepInEx\plugins"
 move "!extractPath!\yippeesound" "!extractPath!\BepInEx\plugins"
+move "!extractPath!\FreeJester" "!extractPath!\BepInEx\plugins"
 move "!extractPath!\NicholaScott.BepInEx.RuntimeNetcodeRPCValidator.dll" "!extractPath!\BepInEx\plugins"
 echo Complete.
 

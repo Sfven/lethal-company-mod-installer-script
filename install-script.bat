@@ -23,7 +23,9 @@ set "size=11"
 set "bepinEx=https://gcdn.thunderstore.io/live/repository/packages/BepInEx-BepInExPack-5.4.2100.zip"
 
 echo Tip: To copy a folder's location, shift+right click the folder and press 'Copy as path.'
-echo Other tip: To paste that in here, right click here in the terminal.
+echo Other tip: To paste that in here, use ctrl+shift+v.
+echo ""
+
 set /p "extractPath=Enter path of your Lethal Company installation (Leave blank for default: '%defaultDir%'): "
 set extractPath=%extractPath:"=%
 set "fileName=tmp.zip"

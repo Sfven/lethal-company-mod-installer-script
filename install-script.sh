@@ -12,12 +12,12 @@ pause() {
 die() {
   echo "[Error] $1"
   pause
-  exit "${2:-1}" # Second arg passed to die() or 1 if null
+  exit "${2:-1}" # 2nd arg passed to die() or 1 if null
 }
 
 # Download zip, failing on HTTP errors, retrying otherwise, & extract it to $2
 fetch() {
-  curl --fail --retry 3 -sSo "$zip" "$1" && unzip -oq "$zip" -d "$2"
+  curl --retry 3 -Sfso "$zip" "$1" && unzip -oq "$zip" -d "$2"
 }
 
 echo "Lethal Company mod installer/updater script, by Sfven."
@@ -25,8 +25,8 @@ echo "------------------------------------------------------"
 
 # Verify packages exist
 missing=()
-for cmd in curl unzip mktemp mv cp rm mkdir; do
-  command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+for i in curl unzip mktemp; do
+  command -v "$i" >/dev/null 2>&1 || missing+=("$i")
 done
 (( ${#missing[@]} == 0 )) || die "Missing required packages: ${missing[*]}. Please install them using your package manager of choice." 2
 
@@ -43,15 +43,18 @@ zip="$tmpDir/tmp.zip"
 
 urls=(
   "https://ccdn.thunderstore.io/live/repository/packages/Bingle-MinecraftCaveSounds-1.0.0.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/Clementinise-CustomSounds-2.3.2.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Electric131-OuijaBoard-1.5.5.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-HookGenPatcher-0.0.5.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-LethalLib-1.1.1.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-LethalThings-0.10.13.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/FlipMods-TooManyEmotes-2.3.17.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/HGG-JigglePhysicsPlugin-1.1.2.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/JunLethalCompany-GamblingMachineAtTheCompany-1.3.5.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-Dont_Touch_Me-1.2.8.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-Herobrine-1.3.12.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-NavMeshInCompany-1.0.3.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/KlippKlubben-DraculaFlowBug-1.2.0.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/KoderTeh-Boombox_Controller-1.2.7.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kolton12O-OpenTheNoor-1.1.7.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Mhz-MoreHead-1.2.6.zip"
@@ -61,9 +64,9 @@ urls=(
   "https://ccdn.thunderstore.io/live/repository/packages/Spantle-BidenSoda-1.1.3.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/TopraksuK-FreeBirdTotemRemixJester-1.0.1.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/anormaltwig-LateCompany-1.0.18.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/no00ob-LCSoundTool-1.5.1.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/notnotnotswipez-MoreCompany-1.14.0.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/sunnobunno-LandMineFartReverb-1.0.3.zip"
-  "https://ccdn.thunderstore.io/live/repository/packages/sunnobunno-YippeeMod-1.2.4.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/x753-More_Suits-1.5.4.zip"
 )
 
@@ -73,38 +76,16 @@ bepinEx="https://ccdn.thunderstore.io/live/repository/packages/BepInEx-BepInExPa
 # Query game directory, default otherwise
 read -r -p "Enter path of your Lethal Company installation (Leave blank for default: '$defaultDir'): " gameDir
 gameDir="${gameDir:-$defaultDir}" # gameDir or defaultDir if null
-gameDir="${gameDir//\"/}"   # strip quotes from 'Copy as path'
+gameDir="${gameDir//\"/}"   # strip quotes
 pluginsDir="$gameDir/BepInEx/plugins"
 
 [[ -e "$gameDir" ]] || die "Path '$gameDir' not found."
 
 # If 'plugins/' exists
 if [[ -e "$pluginsDir" ]]; then
-  echo "[Warn] Detected existing plugins folder."
-  echo "1) Overwrite the contents (default)"
-  echo "2) Create a backup, then overwrite"
-  echo "3) Abort"
-  while :; do
-    read -r -p "Choose an option [1-3]: " choice
-    case "${choice:-1}" in
-      1)
-        rm -r "$pluginsDir"
-        ;;
-      2)
-        rm -rf "$pluginsDir.bak"
-        mv "$pluginsDir" "$pluginsDir.bak"
-        ;;
-      3)
-        echo "Aborted. No changes were made."
-        pause
-        exit 0
-        ;;
-      *)
-        echo "[Error] Invalid choice."
-        continue
-    esac
-    break
-  done
+  echo "[Info] Detected existing plugins folder. Moving '$pluginsDir' to '$pluginsDir.bak'."
+  rm -rf "$pluginsDir.bak"
+  mv "$pluginsDir" "$pluginsDir.bak"
 fi
 
 # Install winhttp.dll if not exist
@@ -117,7 +98,7 @@ fi
 # Download mods
 for i in "${urls[@]}"; do
   echo "[Info] Installing $i..."
-  fetch "$i" "$gameDir" || echo "[Error] Failed to install $i"
+  fetch "$i" "$gameDir" || echo "[Warn] Failed to install $i"
 done
 
 # Deal with dumb mods

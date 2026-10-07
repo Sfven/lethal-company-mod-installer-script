@@ -28,20 +28,13 @@ installMod() {
   elif [[ $entries == *$'\n'config/* || $entries == *$'\n'core/* || $entries == *$'\n'patchers/* || $entries == *$'\n'plugins/* ]]; then
     dest="$gameDir/BepInEx"
   fi
-  mkdir -p "$dest"
-  unzip -oq "$zip" -d "$dest"
+  mkdir -p "$dest" || return
+  unzip -oq "$zip" -d "$dest" || return
   rm -rf "$dest/CHANGELOG.md" "$dest/icon.png" "$dest/LICENSE" "$dest/manifest.json" "$dest/README.md"
 }
 
 echo "Lethal Company mod installer/updater script, by Sfven."
 echo "-------------------------------------------------------"
-
-# Verify packages exist
-missing=()
-for i in curl unzip mktemp; do
-  command -v "$i" >/dev/null 2>&1 || missing+=("$i")
-done
-(( ${#missing[@]} == 0 )) || die "Missing required packages: ${missing[*]}. Please install them using your package manager of choice." 2
 
 echo ""
 echo "Tip: To copy a folder's location, right click the folder and press 'Copy as path.'"
@@ -55,11 +48,10 @@ urls=(
   "https://ccdn.thunderstore.io/live/repository/packages/Clementinise-CustomSounds-2.3.2.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Electric131-OuijaBoard-1.5.5.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-HookGenPatcher-0.0.5.zip"
-  "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-LethalLib-1.1.1.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-LethalLib-1.2.0.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Evaisa-LethalThings-0.10.13.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/FlipMods-TooManyEmotes-2.3.17.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/HGG-JigglePhysicsPlugin-1.1.2.zip"
-  "https://ccdn.thunderstore.io/live/repository/packages/JunLethalCompany-GamblingMachineAtTheCompany-1.3.5.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-Dont_Touch_Me-1.2.8.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-Herobrine-1.3.12.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/Kittenji-NavMeshInCompany-1.0.3.zip"
@@ -73,6 +65,7 @@ urls=(
   "https://ccdn.thunderstore.io/live/repository/packages/Spantle-BidenSoda-1.1.3.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/TopraksuK-FreeBirdTotemRemixJester-1.0.1.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/anormaltwig-LateCompany-1.0.18.zip"
+  "https://ccdn.thunderstore.io/live/repository/packages/mrgrm7-LethalCasino-1.1.3.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/no00ob-LCSoundTool-1.5.1.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/notnotnotswipez-MoreCompany-1.14.0.zip"
   "https://ccdn.thunderstore.io/live/repository/packages/sunnobunno-LandMineFartReverb-1.0.3.zip"
@@ -91,15 +84,12 @@ pluginsDir="$gameDir/BepInEx/plugins"
 
 [[ -e "$gameDir" ]] || die "Path '$gameDir' not found."
 
-# If 'BepInEx/' exists rm it
-if [[ -e "$gameDir/BepInEx" ]]; then
-  echo "[Info] Detected existing mod loader folder. Removing..."
-  rm -rf "$gameDir/BepInEx" 'winhttp.dll' 'doorstop_config.ini'
-  echo "[Info] Installing $bepinEx"
-  fetch "$bepinEx"
-  unzip -oq "$zip" -d "$tmpDir/bepinex"
-  cp -a "$tmpDir/bepinex/BepInExPack/." "$gameDir/"
-fi
+# In case 'BepInEx/' exists rm it & its components - we want a fresh install with no old tainted mods
+echo "[Info] Installing $bepinEx"
+rm -rf "$gameDir/BepInEx" "$gameDir/winhttp.dll" "$gameDir/doorstop_config.ini"
+fetch "$bepinEx"
+unzip -oq "$zip" -d "$tmpDir/bepinex"
+cp -a "$tmpDir/bepinex/BepInExPack/." "$gameDir/"
 
 # Download mods
 for i in "${urls[@]}"; do

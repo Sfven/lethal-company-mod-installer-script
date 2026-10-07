@@ -1,28 +1,5 @@
 # LC Install Script
 
-A script for installing various mods for Lethal Company. It purges old mods and can install the BepInEx modloader if it detects that it is not already present.
+A script for installing various mods for Lethal Company. It purges old mods and installs the BepInEx modloader along with new mods.
 
-## Mods
-* MoreCompany
-  * Increases max player limit
-* More Emotes
-  * Adds more emotes
-* YippeeMod
-  * Makes hoarding bugs have a cute 'yippee' sound
-* Boombox Controller
-  * Allows you to play YouTube videos as audio through the boombox; use `/bhelp` to see commands
-* LateCompany
-  * Allows players to join after a game has already started
-* FreeJester
-  * Replaces Jester sound effects with Freebird
-* LethalClunk
-  * Replaces the Large Axle's drop sound with the metal pipe hitting the ground sound effect
-* More suits
-  * Adds more suits for players
-
-### Dependencies
-* BepInExPack
-* LC API
-* Runtime Netcode Patcher
-* LCSoundTool
-* CustomSounds
+I would put a list a brief description of each of the notable mods here, but that would detract from the fun - the mystery of not knowing exactly what you're getting into is quite thrilling... Also it means I don't have to constantly update this readme.

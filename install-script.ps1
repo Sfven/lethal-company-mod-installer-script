@@ -56,8 +56,8 @@ try {
   Write-Host "-------------------------------------------------------"
 
   Write-Host ""
-  Write-Host "Tip: To copy a folder's location, right click the folder and press 'Copy as path.'"
-  Write-Host "Other tip: To paste that in here, right click in the terminal or use ctrl+v."
+  Write-Host "Tip: To copy a folder's location, shift+right-click the folder and press 'Copy as path.'"
+  Write-Host "Other tip: To paste that in here, right-click in the terminal or use ctrl+v."
   Write-Host ""
 
   if ($env:OS -eq 'Windows_NT') {
@@ -113,7 +113,7 @@ try {
 
   # In case 'BepInEx/' exists rm it & its components - we want a fresh install with no old tainted mods
   Write-Host "[Info] Installing $bepinEx"
-  foreach ($i in 'BepInEx', 'winhttp.dll', 'doorstop_config.ini') {
+  foreach ($i in 'BepInEx', 'winhttp.dll', 'doorstop_config.ini', '.doorstop_version') {
     Remove-Item -LiteralPath (Join-Path $gameDir $i) -Recurse -Force -ErrorAction SilentlyContinue
   }
   Get-Zip $bepinEx

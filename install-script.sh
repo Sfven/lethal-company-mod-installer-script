@@ -37,7 +37,7 @@ echo "Lethal Company mod installer/updater script, by Sfven."
 echo "-------------------------------------------------------"
 
 echo ""
-echo "Tip: To copy a folder's location, right click the folder and press 'Copy as path.'"
+echo "Tip: To copy a folder's location, right-click the folder and press 'Copy as path.'"
 echo "Other tip: To paste that in here, use ctrl+shift+v."
 echo ""
 
@@ -86,7 +86,7 @@ pluginsDir="$gameDir/BepInEx/plugins"
 
 # In case 'BepInEx/' exists rm it & its components - we want a fresh install with no old tainted mods
 echo "[Info] Installing $bepinEx"
-rm -rf "$gameDir/BepInEx" "$gameDir/winhttp.dll" "$gameDir/doorstop_config.ini"
+rm -rf "$gameDir/BepInEx" "$gameDir/winhttp.dll" "$gameDir/doorstop_config.ini" "$gameDir/doorstop_version"
 fetch "$bepinEx"
 unzip -oq "$zip" -d "$tmpDir/bepinex"
 cp -a "$tmpDir/bepinex/BepInExPack/." "$gameDir/"

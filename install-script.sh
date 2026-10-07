@@ -3,15 +3,8 @@ set -Eeuo pipefail
 
 trap 'echo "[Error] script failed at line $LINENO." >&2' ERR
 
-# 1 char, echo off, disabled backslash, assigned to '_'
-pause() {
-  echo "Press any key to continue..."
-  read -n 1 -s -r _
-}
-
 die() {
   echo "[Error] $1"
-  pause
   exit "${2:-1}" # 2nd arg passed to die() or 1 if null
 }
 
@@ -115,4 +108,3 @@ for i in "${urls[@]}"; do
 done
 
 echo "[Done]"
-pause

@@ -15,13 +15,33 @@ die() {
   exit "${2:-1}" # 2nd arg passed to die() or 1 if null
 }
 
-# Download zip, failing on HTTP errors, retrying otherwise, & extract it to $2
+# Temp dir for downloads, removed on EXIT
+tmpDir="$(mktemp -d)"
+trap 'rm -rf "$tmpDir"' EXIT
+zip="$tmpDir/tmp.zip"
+
+# Download zip, failing on HTTP errors, retrying otherwise
 fetch() {
-  curl --retry 3 -Sfso "$zip" "$1" && unzip -oq "$zip" -d "$2"
+  curl --retry 3 -Sfso "$zip" "$1"
+}
+
+installMod() {
+  fetch "$1" || return
+  local entries dest="$pluginsDir"
+  # Newline-padded listing (no pipe, avoids SIGPIPE under pipefail) anchors matches to entry starts
+  entries=$'\n'"$(unzip -Z1 "$zip")" || return
+  if [[ $entries == *$'\n'BepInEx/* ]]; then
+    dest="$gameDir"
+  elif [[ $entries == *$'\n'config/* || $entries == *$'\n'core/* || $entries == *$'\n'patchers/* || $entries == *$'\n'plugins/* ]]; then
+    dest="$gameDir/BepInEx"
+  fi
+  mkdir -p "$dest"
+  unzip -oq "$zip" -d "$dest"
+  rm -rf "$dest/CHANGELOG.md" "$dest/icon.png" "$dest/LICENSE" "$dest/manifest.json" "$dest/README.md"
 }
 
 echo "Lethal Company mod installer/updater script, by Sfven."
-echo "------------------------------------------------------"
+echo "-------------------------------------------------------"
 
 # Verify packages exist
 missing=()
@@ -30,16 +50,12 @@ for i in curl unzip mktemp; do
 done
 (( ${#missing[@]} == 0 )) || die "Missing required packages: ${missing[*]}. Please install them using your package manager of choice." 2
 
+echo ""
 echo "Tip: To copy a folder's location, right click the folder and press 'Copy as path.'"
 echo "Other tip: To paste that in here, use ctrl+shift+v."
 echo ""
 
-defaultDir="$HOME/.steam/steam/steamapps/common/Lethal Company/"
-
-# Temp dir for downloads, removed on EXIT
-tmpDir="$(mktemp -d)"
-trap 'rm -rf "$tmpDir"' EXIT
-zip="$tmpDir/tmp.zip"
+defaultDir="$HOME/.steam/steam/steamapps/common/Lethal Company"
 
 urls=(
   "https://ccdn.thunderstore.io/live/repository/packages/Bingle-MinecraftCaveSounds-1.0.0.zip"
@@ -76,40 +92,26 @@ bepinEx="https://ccdn.thunderstore.io/live/repository/packages/BepInEx-BepInExPa
 # Query game directory, default otherwise
 read -r -p "Enter path of your Lethal Company installation (Leave blank for default: '$defaultDir'): " gameDir
 gameDir="${gameDir:-$defaultDir}" # gameDir or defaultDir if null
-gameDir="${gameDir//\"/}"   # strip quotes
+gameDir="${gameDir//\"/}" # strip quotes
+gameDir="${gameDir%/}" # remove trailing /
 pluginsDir="$gameDir/BepInEx/plugins"
 
 [[ -e "$gameDir" ]] || die "Path '$gameDir' not found."
 
-# If 'plugins/' exists
-if [[ -e "$pluginsDir" ]]; then
-  echo "[Info] Detected existing plugins folder. Moving '$pluginsDir' to '$pluginsDir.bak'."
-  rm -rf "$pluginsDir.bak"
-  mv "$pluginsDir" "$pluginsDir.bak"
-fi
-
-# Install winhttp.dll if not exist
-if [[ ! -e "$gameDir/winhttp.dll" ]]; then
-  echo "[Info] winhttp.dll not detected. Installing BepInExPack modloader..."
-  fetch "$bepinEx" "$tmpDir/bepinex"
+# If 'BepInEx/' exists rm it
+if [[ -e "$gameDir/BepInEx" ]]; then
+  echo "[Info] Detected existing mod loader folder. Removing..."
+  rm -rf "$gameDir/BepInEx" 'winhttp.dll' 'doorstop_config.ini'
+  echo "[Info] Installing $bepinEx"
+  fetch "$bepinEx"
+  unzip -oq "$zip" -d "$tmpDir/bepinex"
   cp -a "$tmpDir/bepinex/BepInExPack/." "$gameDir/"
 fi
 
 # Download mods
 for i in "${urls[@]}"; do
-  echo "[Info] Installing $i..."
-  fetch "$i" "$gameDir" || echo "[Warn] Failed to install $i"
-done
-
-# Deal with dumb mods
-echo "[Info] Moving mods that are not packaged correctly..."
-mkdir -p "$pluginsDir"
-for i in YippeeMod.dll yippeesound FreeJester NicholaScott.BepInEx.RuntimeNetcodeRPCValidator.dll; do
-  if [[ -e "$gameDir/$i" ]]; then
-    mv "$gameDir/$i" "$pluginsDir/"
-  else
-    echo "[Warn] '$i' not found in '$gameDir', skipping."
-  fi
+  echo "[Info] Installing $i"
+  installMod "$i" || echo "[Warn] Failed to install $i."
 done
 
 echo "[Done]"
